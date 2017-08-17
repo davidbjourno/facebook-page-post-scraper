@@ -3,10 +3,11 @@ import json
 import datetime
 import csv
 import time
+from scraper_config import APP_ID, APP_SECRET, PAGE_ID
 
-app_id = "<FILL IN>"
-app_secret = "<FILL IN>" # DO NOT SHARE WITH ANYONE!
-file_id = "cnn"
+app_id = APP_ID
+app_secret = APP_SECRET
+file_id = PAGE_ID
 
 access_token = app_id + "|" + app_secret
 
@@ -64,6 +65,7 @@ def processFacebookComment(comment, status_id, parent_id = ''):
     comment_message = '' if 'message' not in comment else \
             unicode_normalize(comment['message'])
     comment_author = unicode_normalize(comment['from']['name'])
+    comment_author_id = unicode_normalize(comment['from']['id'])
     comment_likes = 0 if 'like_count' not in comment else \
             comment['like_count']
 
@@ -85,13 +87,13 @@ def processFacebookComment(comment, status_id, parent_id = ''):
     # Return a tuple of all processed data
 
     return (comment_id, status_id, parent_id, comment_message, comment_author,
-            comment_published, comment_likes)
+        comment_author_id, comment_published, comment_likes)
 
 def scrapeFacebookPageFeedComments(page_id, access_token):
     with open('%s_facebook_comments.csv' % file_id, 'w', newline='', encoding='utf-8') as file:
         w = csv.writer(file)
         w.writerow(["comment_id", "status_id", "parent_id", "comment_message",
-            "comment_author", "comment_published", "comment_likes"])
+            "comment_author", "comment_author_id", "comment_published", "comment_likes"])
 
         num_processed = 0   # keep a count on how many we've processed
         scrape_starttime = datetime.datetime.now()
